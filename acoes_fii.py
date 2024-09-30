@@ -4,6 +4,9 @@ import numpy as np
 import altair as alt
 import datetime
 
+# Configurar a página para wide mode
+st.set_page_config(layout="wide")
+
 st.title("Simulação de Investimentos em Ações ou FIIs")
 
 # Entrada de dados pelo usuário
