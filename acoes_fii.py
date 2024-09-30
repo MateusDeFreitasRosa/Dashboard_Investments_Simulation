@@ -187,8 +187,9 @@ with col1:
     st.altair_chart(chart_dividendos, use_container_width=True)
 
 with col2:
-    st.subheader("Evolução de Patrimônio por Ano")
-    # Criar o gráfico de barras
+    st.subheader("Evolução de Patrimônio e Impacto da Inflação por Ano")
+    
+    # Gráfico de barras para o Saldo Total Anual
     chart_patrimonio = alt.Chart(df_ano).mark_bar().encode(
         x=alt.X('Ano:O', title='Ano'),
         y=alt.Y('Saldo Total Anual (R$):Q', title='Saldo Total Anual (R$)'),
@@ -198,7 +199,7 @@ with col2:
         ]
     )
 
-    # Criar a camada de texto para os labels
+    # Camada de texto para as barras (Saldo Total Anual)
     text_patrimonio = chart_patrimonio.mark_text(
         align='center',
         baseline='bottom',
@@ -207,11 +208,39 @@ with col2:
         text=alt.Text('Saldo Total Anual (R$):Q', format=',.2f')
     )
 
-    # Combinar o gráfico de barras com os labels
-    chart_patrimonio = (chart_patrimonio + text_patrimonio).interactive()
+    # Gráfico de linha para o Impacto da Inflação
+    chart_inflacao = alt.Chart(df_ano).mark_line(color='red').encode(
+        x=alt.X('Ano:O', title='Ano'),
+        y=alt.Y('Impacto da Inflação (R$):Q',),
+        tooltip=[
+            alt.Tooltip('Ano:O'),
+            alt.Tooltip('Impacto da Inflação (R$):Q', format=',.2f')
+        ]
+    )
 
-    # Exibir o gráfico
-    st.altair_chart(chart_patrimonio, use_container_width=True)
+    # Pontos da linha de inflação com labels
+    pontos_inflacao = chart_inflacao.mark_point(size=60).encode(
+        y=alt.Y('Impacto da Inflação (R$):Q')
+    )
+
+    # Camada de texto para os pontos da linha de inflação
+    text_inflacao = chart_inflacao.mark_text(
+        align='center',
+        baseline='bottom',
+        dy=-10,
+        color='black'
+    ).encode(
+        text=alt.Text('Impacto da Inflação (R$):Q', format=',.2f')
+    )
+
+    # Combinar o gráfico de barras com a linha de inflação, pontos e labels
+    chart_combinado = (
+        (chart_patrimonio + text_patrimonio + chart_inflacao + pontos_inflacao + text_inflacao)
+        .interactive()
+    )
+
+    # Exibir o gráfico combinado
+    st.altair_chart(chart_combinado, use_container_width=True)
 
 # Segundo par de gráficos
 col1, col2 = st.columns(2)
